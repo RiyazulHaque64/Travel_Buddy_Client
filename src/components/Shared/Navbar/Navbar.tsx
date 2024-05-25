@@ -34,7 +34,7 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: "#fff", boxShadow: 0 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <ConnectingAirportsIcon
@@ -42,6 +42,7 @@ const Navbar = () => {
               display: { xs: "none", md: "flex" },
               mr: 1,
               fontSize: "40px",
+              color: "primary.main",
             }}
           />
           <Typography
@@ -53,7 +54,7 @@ const Navbar = () => {
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
-              color: "inherit",
+              color: "primary.main",
               textDecoration: "none",
             }}
           >
@@ -68,7 +69,7 @@ const Navbar = () => {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+              <MenuIcon sx={{ color: "primary.main" }} />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -94,7 +95,7 @@ const Navbar = () => {
                     component={Link}
                     href={item.path}
                     textAlign="center"
-                    sx={{ textDecoration: "none" }}
+                    sx={{ textDecoration: "none", color: "primary.main" }}
                   >
                     {item.title}
                   </Typography>
@@ -107,20 +108,21 @@ const Navbar = () => {
               display: { xs: "flex", md: "none" },
               mr: 1,
               fontSize: "40px",
+              color: "primary.main",
             }}
           />
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link}
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
-              color: "inherit",
+              color: "primary.main",
               textDecoration: "none",
             }}
           >
@@ -141,7 +143,7 @@ const Navbar = () => {
                 onClick={handleCloseNavMenu}
                 sx={{
                   m: 2,
-                  color: "white",
+                  color: "primary.main",
                   display: "block",
                   textDecoration: "none",
                 }}
@@ -152,9 +154,7 @@ const Navbar = () => {
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Link href="/login">
-              <Button variant="text" sx={{ color: "#fff", fontWeight: 600 }}>
-                Login
-              </Button>
+              <Button>Login</Button>
             </Link>
           </Box>
         </Toolbar>

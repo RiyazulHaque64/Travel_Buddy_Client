@@ -1,6 +1,5 @@
-import ConnectingAirportsIcon from "@mui/icons-material/ConnectingAirports";
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import Link from "next/link";
+import Logo from "../Logo/Logo";
 
 const Footer = () => {
   return (
@@ -8,40 +7,17 @@ const Footer = () => {
       direction="row"
       alignItems="center"
       justifyContent="center"
-      sx={{ background: "#5c55e1", p: "20px" }}
+      sx={{ p: "20px", borderTop: "1px solid #e0e0e0" }}
     >
-      <Stack direction="row" alignItems="center">
-        <ConnectingAirportsIcon
-          sx={{
-            fontSize: "40px",
-            color: "#fff",
-          }}
-        />
-        <Typography
-          variant="h6"
-          component={Link}
-          href="/"
-          sx={{
-            mr: 2,
-            fontFamily: "monospace",
-            fontWeight: 700,
-            color: "inherit",
-            textDecoration: "none",
-            color: "#fff",
-          }}
-        >
-          Travel Buddy
-        </Typography>
-      </Stack>
+      <Logo />
       <Divider
-        color="#fff"
         orientation="vertical"
         variant="middle"
         flexItem
-        sx={{ marginRight: "14px" }}
+        sx={{ marginRight: "14px", backgroundColor: "primary.main" }}
       />
       <Box>
-        <Typography variant="p" component="p" color="#fff">
+        <Typography variant="p" component="p" color="primary.main">
           Copyright &copy; 2024 All rights reserved Travel Buddy
         </Typography>
       </Box>
