@@ -1,47 +1,26 @@
 "use client";
 
-import travel_illustration from "@/assets/images/travel_illustration.jpg";
 import Logo from "@/components/Shared/Logo/Logo";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { FieldValues } from "react-hook-form";
+import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
+import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
+import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
+  const handleSubmit = (values: FieldValues) => {
+    console.log(values);
   };
 
   return (
     <Container>
-      <Stack direction="row" alignItems="center" height="100vh" gap={5}>
-        <Stack direction="row" justifyContent="center" width="50%">
-          <Image
-            src={travel_illustration}
-            alt="Travel Illustration"
-            width={500}
-          />
-        </Stack>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+      >
         <Box
           width="50%"
           sx={{
@@ -54,44 +33,16 @@ const LoginPage = () => {
           <Typography component="p" mb={3} textAlign="center" fontSize={26}>
             Login Your Account
           </Typography>
-          <form action="">
+          <TBForm
+            onSubmit={handleSubmit}
+            defaultValues={{ email: "", password: "" }}
+          >
             <Grid container spacing={2}>
               <Grid item width="100%">
-                <TextField
-                  fullWidth
-                  type="email"
-                  variant="outlined"
-                  size="small"
-                  label="Email"
-                />
+                <TBInput name="email" label="Email" type="email" fullWidth />
               </Grid>
               <Grid item width="100%">
-                <FormControl variant="outlined" size="small" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={showPassword ? "text" : "password"}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                </FormControl>
+                <TBPasswordInput name="password" label="Password" fullwidth />
               </Grid>
               <Stack width="100%" justifyContent="end" sx={{ mt: "10px" }}>
                 <Typography component="a" sx={{ textAlign: "right" }}>
@@ -99,10 +50,12 @@ const LoginPage = () => {
                 </Typography>
               </Stack>
               <Grid item width="100%">
-                <Button fullWidth>Login</Button>
+                <Button type="submit" fullWidth>
+                  Login
+                </Button>
               </Grid>
             </Grid>
-          </form>
+          </TBForm>
           <Typography sx={{ mt: "14px" }}>
             Are you new?{" "}
             <Typography

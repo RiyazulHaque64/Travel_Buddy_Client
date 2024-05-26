@@ -1,15 +1,27 @@
-import { Box } from "@mui/material";
-import hero_section_bg from "../../../../assets/images/hero_section_bg.jpg";
+import hero_section_bg from "@/assets/images/hero_section_bg.jpg";
+import { Box, Typography } from "@mui/material";
+import Image from "next/image";
 
 const HeroSection = () => {
   return (
     <Box
-      sx={{ border: "1px solid red", width: "100vw", height: "100vh" }}
-      style={{
-        backgroundImage: `url(${hero_section_bg})`,
+      sx={{
+        position: "relative",
+        width: "100vw",
+        height: "calc(100vh - 80px)",
       }}
     >
-      my name is Riyazul Haque
+      <Image
+        src={hero_section_bg}
+        alt="Bacground Image"
+        style={{
+          width: "100vw",
+          height: "calc(100vh - 80px)",
+          position: "absolute",
+          zIndex: -9999,
+        }}
+      />
+      <Typography variant="h3">My Name is Riyazul Haque</Typography>
     </Box>
   );
 };

@@ -1,42 +1,39 @@
 "use client";
 
-import travel_illustration_1 from "@/assets/images/travel_illustration_1.jpg";
 import Logo from "@/components/Shared/Logo/Logo";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  IconButton,
-  Input,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
+
+import signup from "@/services/actions/signup";
+import convertJsonToFormData from "@/utils/convertJsonToFormData";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { FieldValues } from "react-hook-form";
+import TBFileUploader from "../(withPublicLayout)/components/Forms/TBFileUploader";
+import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
+import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
+import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
 
 const SignupPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
+  const handleSubmit = async (values: FieldValues) => {
+    const age = Number(values?.profile?.age);
+    values.profile.age = age;
+    const convertedData = convertJsonToFormData(values);
+    try {
+      const res = await signup(convertedData);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <Container>
-      <Stack direction="row" alignItems="center" height="100vh" gap={5}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+        gap={5}
+      >
         <Box
           width="50%"
           sx={{
@@ -49,90 +46,41 @@ const SignupPage = () => {
           <Typography component="p" mb={3} textAlign="center" fontSize={26}>
             Register Your Account
           </Typography>
-          <form action="">
+          <TBForm
+            onSubmit={handleSubmit}
+            defaultValues={{
+              name: "",
+              email: "",
+              password: "",
+              profile: { age: "", bio: "" },
+            }}
+          >
             <Grid container spacing={2}>
               <Grid item md={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  variant="outlined"
-                  size="small"
-                  label="Name"
-                />
+                <TBInput name="name" label="Name" fullWidth />
               </Grid>
               <Grid item md={6}>
-                <TextField
-                  fullWidth
-                  type="email"
-                  variant="outlined"
-                  size="small"
-                  label="Email"
-                />
+                <TBInput name="email" type="email" label="Email" fullWidth />
               </Grid>
               <Grid item md={6}>
-                <FormControl variant="outlined" size="small" fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
-                    Password
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password"
-                    type={showPassword ? "text" : "password"}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                </FormControl>
+                <TBPasswordInput name="password" label="Password" fullwidth />
               </Grid>
               <Grid item md={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  variant="outlined"
-                  size="small"
-                  label="Bio"
-                />
+                <TBInput name="profile.bio" label="Bio" fullWidth />
               </Grid>
               <Grid item md={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  variant="outlined"
-                  size="small"
-                  label="Age"
-                />
+                <TBInput name="profile.age" label="Age" fullWidth />
               </Grid>
               <Grid item md={6}>
-                <Button
-                  fullWidth
-                  component="label"
-                  role={undefined}
-                  variant="outlined"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload file
-                  <Input type="file" sx={{ display: "none" }} />
-                </Button>
+                <TBFileUploader name="file" label="Upload Image" />
               </Grid>
               <Grid item width="100%">
-                <Button fullWidth>Login</Button>
+                <Button type="submit" fullWidth>
+                  Login
+                </Button>
               </Grid>
             </Grid>
-          </form>
+          </TBForm>
           <Typography sx={{ mt: "14px" }}>
             Already have an account? Please{" "}
             <Typography
@@ -144,13 +92,6 @@ const SignupPage = () => {
             </Typography>
           </Typography>
         </Box>
-        <Stack direction="row" justifyContent="center" width="50%">
-          <Image
-            src={travel_illustration_1}
-            alt="Travel Illustration"
-            width={500}
-          />
-        </Stack>
       </Stack>
     </Container>
   );
