@@ -5,7 +5,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
-  Button,
   Container,
   IconButton,
   Menu,
@@ -13,8 +12,13 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, { useState } from "react";
+const AuthButton = dynamic(
+  () => import("@/components/UI/AuthButton/AuthButton"),
+  { ssr: false }
+);
 
 const menuItems = [
   { title: "Trips", path: "/trips" },
@@ -152,11 +156,7 @@ const Navbar = () => {
               </Typography>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Link href="/login">
-              <Button>Login</Button>
-            </Link>
-          </Box>
+          <AuthButton />
         </Toolbar>
       </Container>
     </AppBar>

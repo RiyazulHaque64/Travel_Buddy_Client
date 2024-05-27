@@ -2,26 +2,49 @@
 
 import Logo from "@/components/Shared/Logo/Logo";
 
+import login from "@/services/actions/login";
 import signup from "@/services/actions/signup";
+import { storeUserInfo } from "@/services/auth.service";
 import convertJsonToFormData from "@/utils/convertJsonToFormData";
 import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { FieldValues } from "react-hook-form";
+import { toast } from "sonner";
 import TBFileUploader from "../(withPublicLayout)/components/Forms/TBFileUploader";
 import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
 import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
 import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
 
 const SignupPage = () => {
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const handleSubmit = async (values: FieldValues) => {
     const age = Number(values?.profile?.age);
     values.profile.age = age;
     const convertedData = convertJsonToFormData(values);
     try {
       const res = await signup(convertedData);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
+      if (res?.success) {
+        toast.success(res?.message);
+        const loginResponse = await login({
+          email: values?.email,
+          password: values?.password,
+        });
+        if (loginResponse?.success) {
+          storeUserInfo(loginResponse?.data?.token);
+          router.push("/");
+        } else {
+          setError(res?.message);
+        }
+      } else {
+        setError(res?.message);
+      }
+    } catch (error: any) {
+      setError("Something went wrong!");
+      console.log(error?.message);
     }
   };
 
@@ -46,6 +69,19 @@ const SignupPage = () => {
           <Typography component="p" mb={3} textAlign="center" fontSize={26}>
             Register Your Account
           </Typography>
+          {error?.length > 1 && (
+            <Box
+              mb={3}
+              p={1}
+              textAlign="center"
+              sx={{
+                backgroundColor: "#ef5350",
+                borderRadius: "4px",
+              }}
+            >
+              <Typography color="white">{error}</Typography>
+            </Box>
+          )}
           <TBForm
             onSubmit={handleSubmit}
             defaultValues={{
@@ -88,7 +124,7 @@ const SignupPage = () => {
               href="/login"
               sx={{ textDecoration: "none", color: "primary.main" }}
             >
-              Login
+              Signup
             </Typography>
           </Typography>
         </Box>
