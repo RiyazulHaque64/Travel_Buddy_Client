@@ -1,4 +1,5 @@
 import { authKey } from "@/constants/authKey";
+import { instance as axiosInstance } from "@/helpers/axios/axiosInstance";
 import {
   getFromLocalStorage,
   removeFromLocalStorage,
@@ -33,4 +34,16 @@ export const getUserInfo = () => {
 
 export const removeUserInfo = () => {
   removeFromLocalStorage(authKey);
+};
+
+export const getNewAccessToken = async () => {
+  const res = await axiosInstance({
+    url: `${process.env.NEXT_PUBLIC_SERVER_URL}/access-token`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  });
+  return res;
 };

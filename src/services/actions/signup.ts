@@ -1,7 +1,7 @@
 "use server";
 
 const signup = async (formData: FormData) => {
-  const res = await fetch(`http://localhost:5001/api/register`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/register`, {
     method: "POST",
     body: formData,
     cache: "no-store",

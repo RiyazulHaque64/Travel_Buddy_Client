@@ -1,5 +1,8 @@
+"use client";
+
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Button, Input, SxProps } from "@mui/material";
+import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 type TBFileUploaderProps = {
@@ -9,6 +12,7 @@ type TBFileUploaderProps = {
 };
 
 const TBFileUploader = ({ name, label, sx }: TBFileUploaderProps) => {
+  const [fileName, setFileName] = useState<string | undefined>("");
   const { control } = useFormContext();
   return (
     <Controller
@@ -24,13 +28,14 @@ const TBFileUploader = ({ name, label, sx }: TBFileUploaderProps) => {
           startIcon={<CloudUploadIcon />}
           sx={{ ...sx }}
         >
-          {label}
+          {fileName?.length ? fileName : label}
           <Input
             {...field}
             value={value?.fileName}
-            onChange={(e) =>
-              onChange((e.target as HTMLInputElement).files?.[0])
-            }
+            onChange={(e) => {
+              onChange((e.target as HTMLInputElement).files?.[0]);
+              setFileName((e.target as HTMLInputElement).files?.[0]?.name);
+            }}
             type="file"
             sx={{ display: "none" }}
           />

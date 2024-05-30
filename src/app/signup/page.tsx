@@ -6,22 +6,39 @@ import login from "@/services/actions/login";
 import signup from "@/services/actions/signup";
 import { storeUserInfo } from "@/services/auth.service";
 import convertJsonToFormData from "@/utils/convertJsonToFormData";
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoadingButton } from "@mui/lab";
+import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 import TBFileUploader from "../(withPublicLayout)/components/Forms/TBFileUploader";
 import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
 import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
 import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
 
+const signupFormValidationSchema = z.object({
+  name: z.string().min(1, { message: "Type your name" }),
+  email: z.string().email({ message: "Type a valid email" }),
+  password: z
+    .string()
+    .min(2, { message: "Password must be at least 2 characters" }),
+  profile: z.object({
+    age: z.string().min(1, "Type your age"),
+    bio: z.string().min(1, { message: "Type your bio" }),
+  }),
+});
+
 const SignupPage = () => {
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (values: FieldValues) => {
+    setLoading(true);
     const age = Number(values?.profile?.age);
     values.profile.age = age;
     const convertedData = convertJsonToFormData(values);
@@ -34,15 +51,19 @@ const SignupPage = () => {
           password: values?.password,
         });
         if (loginResponse?.success) {
-          storeUserInfo(loginResponse?.data?.token);
-          router.push("/");
+          setLoading(false);
+          storeUserInfo(loginResponse?.data?.accessToken);
+          router.push("/dashboard");
         } else {
+          setLoading(false);
           setError(res?.message);
         }
       } else {
+        setLoading(false);
         setError(res?.message);
       }
     } catch (error: any) {
+      setLoading(false);
       setError("Something went wrong!");
       console.log(error?.message);
     }
@@ -84,6 +105,7 @@ const SignupPage = () => {
           )}
           <TBForm
             onSubmit={handleSubmit}
+            resolver={zodResolver(signupFormValidationSchema)}
             defaultValues={{
               name: "",
               email: "",
@@ -111,9 +133,16 @@ const SignupPage = () => {
                 <TBFileUploader name="file" label="Upload Image" />
               </Grid>
               <Grid item width="100%">
-                <Button type="submit" fullWidth>
-                  Login
-                </Button>
+                <LoadingButton
+                  type="submit"
+                  loading={loading}
+                  disabled={loading}
+                  loadingIndicator="Creating..."
+                  variant="contained"
+                  fullWidth
+                >
+                  <span>Register</span>
+                </LoadingButton>
               </Grid>
             </Grid>
           </TBForm>
@@ -124,7 +153,7 @@ const SignupPage = () => {
               href="/login"
               sx={{ textDecoration: "none", color: "primary.main" }}
             >
-              Signup
+              login
             </Typography>
           </Typography>
         </Box>

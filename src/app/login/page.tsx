@@ -3,33 +3,46 @@
 import Logo from "@/components/Shared/Logo/Logo";
 import login from "@/services/actions/login";
 import { storeUserInfo } from "@/services/auth.service";
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoadingButton } from "@mui/lab";
+import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
 import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
 import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
 
+const loginFormValidationSchema = z.object({
+  email: z.string().email({ message: "Type your valid email" }),
+  password: z.string().min(1, "Type your password"),
+});
+
 const LoginPage = () => {
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handleSubmit = async (values: FieldValues) => {
     try {
+      setLoading(true);
       const res = await login(values);
       if (res?.success) {
-        if (res?.data?.token) {
-          storeUserInfo(res.data.token);
+        if (res?.data?.accessToken) {
+          storeUserInfo(res.data.accessToken);
           toast.success(res.message);
-          router.push("/");
+          setLoading(false);
+          router.push("/dashboard");
         }
       } else {
         setError(res?.message);
+        setLoading(false);
       }
     } catch (error: any) {
       setError("Something went wrong!");
+      setLoading(false);
       console.log(error?.message);
     }
   };
@@ -70,6 +83,7 @@ const LoginPage = () => {
           <TBForm
             onSubmit={handleSubmit}
             defaultValues={{ email: "", password: "" }}
+            resolver={zodResolver(loginFormValidationSchema)}
           >
             <Grid container spacing={2}>
               <Grid item width="100%">
@@ -84,9 +98,14 @@ const LoginPage = () => {
                 </Typography>
               </Stack>
               <Grid item width="100%">
-                <Button type="submit" fullWidth>
-                  Login
-                </Button>
+                <LoadingButton
+                  type="submit"
+                  loading={loading}
+                  variant="contained"
+                  fullWidth
+                >
+                  <span>Login</span>
+                </LoadingButton>
               </Grid>
             </Grid>
           </TBForm>

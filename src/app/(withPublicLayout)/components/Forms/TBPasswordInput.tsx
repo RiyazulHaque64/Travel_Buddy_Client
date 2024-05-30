@@ -41,7 +41,12 @@ const TBPasswordInput = ({
       name={name}
       render={({ field, fieldState: { error } }) => (
         <FormControl variant="outlined" size={size} fullWidth={fullwidth}>
-          <InputLabel htmlFor="outlined-adornment-password">{label}</InputLabel>
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            error={!!error?.message}
+          >
+            {label}
+          </InputLabel>
           <OutlinedInput
             {...field}
             id="outlined-adornment-password"

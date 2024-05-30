@@ -1,7 +1,10 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { removeUserInfo } from "@/services/auth.service";
+import detectGrettings from "@/utils/detectGrettings";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Avatar, Menu, MenuItem, Stack } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,6 +12,7 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 const drawerWidth = 240;
@@ -20,6 +24,10 @@ export default function DashboardDrawer({
 }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+  const router = useRouter();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -36,12 +44,27 @@ export default function DashboardDrawer({
     }
   };
 
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    handleCloseUserMenu();
+    removeUserInfo();
+    router.push("/login");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
@@ -56,9 +79,39 @@ export default function DashboardDrawer({
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Hi, Riyazul Haque
-          </Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ width: "100%" }}
+          >
+            <Typography variant="h6" noWrap component="div">
+              {detectGrettings()}, Riyazul Haque
+            </Typography>
+            <Box>
+              <Avatar src="" alt="" onClick={handleOpenUserMenu} />
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Stack>
         </Toolbar>
       </AppBar>
       <Box
