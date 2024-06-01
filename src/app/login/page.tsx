@@ -12,9 +12,9 @@ import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import TBForm from "../(withPublicLayout)/components/Forms/TBForm";
-import TBInput from "../(withPublicLayout)/components/Forms/TBInput";
-import TBPasswordInput from "../(withPublicLayout)/components/Forms/TBPasswordInput";
+import TBForm from "../../components/Forms/TBForm";
+import TBInput from "../../components/Forms/TBInput";
+import TBPasswordInput from "../../components/Forms/TBPasswordInput";
 
 const loginFormValidationSchema = z.object({
   email: z.string().email({ message: "Type your valid email" }),
