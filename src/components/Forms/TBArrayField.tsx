@@ -1,7 +1,9 @@
 "use client";
-import { Box, Button } from "@mui/material";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import { Box, Button, Grid, IconButton } from "@mui/material";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import TBArrayFieldItem from "./TBArrayFieldItem";
+import TBInput from "./TBInput";
+import TBTimePicker from "./TBTimePicker";
 
 type TArrayFieldProps = {
   name: string;
@@ -17,32 +19,40 @@ const ArrayField = ({ name }: TArrayFieldProps) => {
   return (
     <Box>
       {fields.map((item, index) => (
-        <Box key={item.id} mb={2}>
-          <TBArrayFieldItem
-            name={`${name}.${index}.startTime`}
-            label="Start Time"
-            fullwidth
-          />
-          <TBArrayFieldItem
-            name={`${name}.${index}.activity`}
-            label="Activity"
-            fullwidth
-          />
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => remove(index)}
-          >
-            Remove
-          </Button>
-        </Box>
+        <Grid container spacing={2} key={item.id} mb={2}>
+          <Grid item md={3}>
+            <TBTimePicker name={`${name}.${index}.date`} label="Date" />
+          </Grid>
+          <Grid item md={2}>
+            <TBTimePicker
+              name={`${name}.${index}.startTime`}
+              label="Start Time"
+            />
+          </Grid>
+          <Grid item md={2}>
+            <TBTimePicker name={`${name}.${index}.endTime`} label="End Time" />
+          </Grid>
+          <Grid item md={4}>
+            <TBInput
+              name={`${name}.${index}.activity`}
+              label="Activity"
+              fullWidth
+            />
+          </Grid>
+          <Grid item md={1}>
+            <IconButton
+              aria-label="remove"
+              color="secondary"
+              onClick={() => remove(index)}
+            >
+              <RemoveCircleOutlineIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
       ))}
 
-      <Button
-        variant="contained"
-        onClick={() => append({ startTime: "", activity: "" })}
-      >
-        Add Item
+      <Button variant="outlined" onClick={() => append({ activity: "" })}>
+        Add Field
       </Button>
     </Box>
   );

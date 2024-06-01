@@ -11,6 +11,7 @@ import {
 type TFormProps = {
   children: ReactNode;
   onSubmit: SubmitHandler<FieldValues>;
+  formReset?: boolean;
 } & TFormConfig;
 
 type TFormConfig = {
@@ -23,6 +24,7 @@ const TBForm = ({
   onSubmit,
   resolver,
   defaultValues,
+  formReset = true,
 }: TFormProps) => {
   const formConfig: TFormConfig = {};
   if (defaultValues) {
@@ -35,7 +37,9 @@ const TBForm = ({
   const { handleSubmit, reset } = methods;
   const submit: SubmitHandler<FieldValues> = (values) => {
     onSubmit(values);
-    reset();
+    if (formReset) {
+      reset();
+    }
   };
 
   return (
