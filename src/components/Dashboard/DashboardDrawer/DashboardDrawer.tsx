@@ -67,6 +67,8 @@ export default function DashboardDrawer({
           zIndex: (theme) => theme.zIndex.drawer + 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          backgroundColor: "#fff",
+          boxShadow: 1,
         }}
       >
         <Toolbar>
@@ -85,7 +87,13 @@ export default function DashboardDrawer({
             justifyContent="space-between"
             sx={{ width: "100%" }}
           >
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              color="primary.main"
+              sx={{ fontSize: "16px", fontWeight: 600 }}
+            >
               {detectGrettings()}, Riyazul Haque
             </Typography>
             <Box>

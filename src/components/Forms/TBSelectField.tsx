@@ -22,7 +22,7 @@ const TBSelectField = ({
   sx,
 }: TBSelectFieldProps) => {
   const { control, formState } = useFormContext();
-  const isError = formState.errors["name"] !== undefined;
+  const isError = formState.errors[name] !== undefined;
   return (
     <Controller
       control={control}
@@ -35,11 +35,10 @@ const TBSelectField = ({
           select
           size={size}
           fullWidth={fullWidth}
-          required={required}
           placeholder={label}
           error={isError}
           helperText={
-            isError ? (formState.errors["name"]?.message as string) : ""
+            isError ? (formState.errors[name]?.message as string) : ""
           }
         >
           {items.map((item) => (

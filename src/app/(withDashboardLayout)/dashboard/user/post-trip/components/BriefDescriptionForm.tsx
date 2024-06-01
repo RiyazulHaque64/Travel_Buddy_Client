@@ -6,7 +6,7 @@ import { Grid } from "@mui/material";
 const BriefDescriptionForm = () => {
   return (
     <Grid item md={12}>
-      <TBTextEditor name="description" />
+      <TBTextEditor name="description" placeholder="Breif Description" />
     </Grid>
   );
 };

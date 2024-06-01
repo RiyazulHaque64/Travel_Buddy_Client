@@ -1,4 +1,5 @@
 "use client";
+
 import TBForm from "@/components/Forms/TBForm";
 import {
   Box,
@@ -12,12 +13,36 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
+import { z } from "zod";
 import BasicInformationForm from "./components/BasicInformationForm";
 import BriefDescriptionForm from "./components/BriefDescriptionForm";
 import ItineraryForm from "./components/ItineraryForm";
+import UploadImagesForm from "./components/UploadImagesForm";
+
+const TripPostValidationSchema = z.object({
+  destination: z.string().min(1, { message: "Destination name is required" }),
+  type: z.string().min(1, { message: "Trip type is required" }),
+  budget: z.string().min(1, { message: "Budget is required" }),
+  activities: z.string().min(1, { message: "Activities is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  itinerary: z.array(
+    z.object({
+      activity: z.string(),
+      date: z.string(),
+      startTime: z.string(),
+      endTime: z.string(),
+    })
+  ),
+  touristPlaceImage: z.array(z.string()),
+});
 
 function getSteps() {
-  return ["Basic information", "Brief Description", "Itinerary"];
+  return [
+    "Basic information",
+    "Upload Images",
+    "Brief Description",
+    "Itinerary",
+  ];
 }
 
 function getStepContent(step: number) {
@@ -25,27 +50,25 @@ function getStepContent(step: number) {
     case 0:
       return <BasicInformationForm />;
     case 1:
-      return <BriefDescriptionForm />;
+      return <UploadImagesForm />;
     case 2:
+      return <BriefDescriptionForm />;
+    case 3:
       return <ItineraryForm />;
     default:
       return "unknown step";
   }
 }
 
-const LinaerStepper = () => {
+const PostTripPage = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const steps = getSteps();
 
-  const handleNext = (data: FieldValues) => {
-    console.log(data);
-    if (activeStep == steps.length - 1) {
-      fetch("https://jsonplaceholder.typicode.com/comments")
-        .then((data) => data.json())
-        .then((res) => {
-          console.log(res);
-          setActiveStep(activeStep + 1);
-        });
+  const handleNext = async (values: FieldValues) => {
+    console.log(values);
+    if (activeStep === steps.length - 1) {
+      console.log("dukece");
+      setActiveStep(activeStep + 1);
     } else {
       setActiveStep(activeStep + 1);
     }
@@ -55,11 +78,12 @@ const LinaerStepper = () => {
     setActiveStep(activeStep - 1);
   };
 
-  // const onSubmit = (data) => {
-  //   console.log(data);
-  // };
+  const handleAddAnother = () => {
+    setActiveStep(0);
+  };
+
   return (
-    <Box>
+    <Box sx={{ mt: "20px" }}>
       <Stepper activeStep={activeStep}>
         {steps.map((step, index) => {
           const labelProps = {};
@@ -73,9 +97,12 @@ const LinaerStepper = () => {
       </Stepper>
 
       {activeStep === steps.length ? (
-        <Typography variant="h3" align="center">
-          Thank You
-        </Typography>
+        <Stack direction="column" alignItems="center" mt={8}>
+          <Typography variant="h4" align="center" mb={5} color="primary.main">
+            Thank you for your post!
+          </Typography>
+          <Button onClick={handleAddAnother}>Add Another</Button>
+        </Stack>
       ) : (
         <Box mt={5}>
           <TBForm
@@ -85,6 +112,9 @@ const LinaerStepper = () => {
               type: "",
               budget: "",
               activities: "",
+              description: "",
+              itinerary: [{ activity: "" }],
+              touristPlaceImage: [],
             }}
             formReset={false}
           >
@@ -98,13 +128,8 @@ const LinaerStepper = () => {
               <Button disabled={activeStep === 0} onClick={handleBack}>
                 back
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                // onClick={handleNext}
-                type="submit"
-              >
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              <Button variant="contained" color="primary" type="submit">
+                {activeStep === steps.length - 1 ? "Submit" : "Next"}
               </Button>
             </Stack>
           </TBForm>
@@ -114,4 +139,4 @@ const LinaerStepper = () => {
   );
 };
 
-export default LinaerStepper;
+export default PostTripPage;

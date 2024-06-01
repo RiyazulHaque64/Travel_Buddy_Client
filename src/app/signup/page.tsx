@@ -2,6 +2,7 @@
 
 import Logo from "@/components/Shared/Logo/Logo";
 
+import TBFileUploader from "@/components/Forms/TBFileUploader";
 import login from "@/services/actions/login";
 import signup from "@/services/actions/signup";
 import { storeUserInfo } from "@/services/auth.service";
@@ -15,13 +16,21 @@ import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import TBFileUploader from "../../components/Forms/TBFileUploader";
 import TBForm from "../../components/Forms/TBForm";
 import TBInput from "../../components/Forms/TBInput";
 import TBPasswordInput from "../../components/Forms/TBPasswordInput";
 
 const signupFormValidationSchema = z.object({
   name: z.string().min(1, { message: "Type your name" }),
+  file: z
+    .instanceof(File)
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
+      {
+        message: "Only .jpg, .png, and .gif formats are allowed",
+      }
+    )
+    .nullable(),
   email: z.string().email({ message: "Type a valid email" }),
   password: z
     .string()
@@ -130,7 +139,7 @@ const SignupPage = () => {
                 <TBInput name="profile.age" label="Age" fullWidth />
               </Grid>
               <Grid item md={6}>
-                <TBFileUploader name="file" label="Upload Image" />
+                <TBFileUploader name="file" label="Profile Picture" />
               </Grid>
               <Grid item width="100%">
                 <LoadingButton
