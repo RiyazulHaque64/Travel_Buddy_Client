@@ -1,7 +1,8 @@
 "use client";
 
 import TBForm from "@/components/Forms/TBForm";
-import { dateFormatter, timeFormatter } from "@/utils/dateAndTimeFormatter";
+import { usePostTripMutation } from "@/redux/api/tripApi";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -19,6 +20,7 @@ import BasicInformationForm from "./components/BasicInformationForm";
 import BriefDescriptionForm from "./components/BriefDescriptionForm";
 import ItineraryForm from "./components/ItineraryForm";
 import UploadImagesForm from "./components/UploadImagesForm";
+import { prepareFormData } from "./helpers/prepareFormData";
 
 const TripPostValidationSchema = z.object({
   destination: z.string().min(1, { message: "Destination name is required" }),
@@ -64,37 +66,19 @@ function getStepContent(step: number) {
 const PostTripPage = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const steps = getSteps();
+  const [postTrip, { isLoading }] = usePostTripMutation();
 
   const handleNext = async (values: FieldValues) => {
-    let modifiedActivities = [];
-    if (values?.activities) {
-      modifiedActivities = values?.activities
-        ?.split(",")
-        ?.map((item: string) => item.trim());
-    }
-    const modifiedItinerary = values?.itinerary?.map(
-      (item: {
-        date: Date;
-        startTime: Date;
-        endTime: Date;
-        activity: string;
-      }) => {
-        return {
-          date: dateFormatter(item.date),
-          startTime: timeFormatter(item.startTime),
-          endTime: timeFormatter(item.endTime),
-          activity: item.activity,
-        };
-      }
-    );
-    values.startDate = dateFormatter(values.startDate);
-    values.endDate = dateFormatter(values.endDate);
-    values.itinerary = modifiedItinerary;
-    values.activities = modifiedActivities;
-
-    console.log(values);
+    const formData = prepareFormData(values);
     if (activeStep === steps.length - 1) {
       console.log("dukece");
+      try {
+        const res = await postTrip(formData).unwrap();
+        console.log("Redux Response:", res);
+      } catch (error: any) {
+        console.log("Try Catch Response: ", error);
+        console.log(error?.message);
+      }
       setActiveStep(activeStep + 1);
     } else {
       setActiveStep(activeStep + 1);
@@ -126,7 +110,7 @@ const PostTripPage = () => {
       {activeStep === steps.length ? (
         <Stack direction="column" alignItems="center" mt={8}>
           <Typography variant="h4" align="center" mb={5} color="primary.main">
-            Thank you for your post!
+            Your trip creation was successful!
           </Typography>
           <Button onClick={handleAddAnother}>Add Another</Button>
         </Stack>
@@ -135,12 +119,13 @@ const PostTripPage = () => {
           <TBForm
             onSubmit={handleNext}
             defaultValues={{
-              destination: "",
-              type: "",
-              budget: "",
-              activities: "",
-              description: "",
-              itinerary: [{ activity: "" }],
+              destination: "Paris, France",
+              type: "STUDY",
+              budget: 3000,
+              activities: "Sightseeing, Museums",
+              description:
+                "A summer vacation to explore the historical and cultural sites of Paris.",
+              itinerary: [{ activity: "Boat tour on the Seine River" }],
               touristPlaceImage: [],
             }}
             formReset={false}
@@ -155,9 +140,16 @@ const PostTripPage = () => {
               <Button disabled={activeStep === 0} onClick={handleBack}>
                 back
               </Button>
-              <Button variant="contained" color="primary" type="submit">
+              <LoadingButton
+                variant="contained"
+                color="primary"
+                type="submit"
+                loading={isLoading}
+                disabled={isLoading}
+                loadingIndicator="Submitting..."
+              >
                 {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </Button>
+              </LoadingButton>
             </Stack>
           </TBForm>
         </Box>

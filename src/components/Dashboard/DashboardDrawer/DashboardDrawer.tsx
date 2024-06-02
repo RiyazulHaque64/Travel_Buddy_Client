@@ -1,6 +1,7 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { useGetUserProfileQuery } from "@/redux/api/userApi";
 import { removeUserInfo } from "@/services/auth.service";
 import detectGrettings from "@/utils/detectGrettings";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -28,7 +29,7 @@ export default function DashboardDrawer({
     null
   );
   const router = useRouter();
-
+  const { data: userInfo, isLoading } = useGetUserProfileQuery({});
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -94,10 +95,16 @@ export default function DashboardDrawer({
               color="primary.main"
               sx={{ fontSize: "16px", fontWeight: 600 }}
             >
-              {detectGrettings()}, Riyazul Haque
+              {`${detectGrettings()}, ${
+                isLoading ? "Loading..." : userInfo?.user?.name
+              }`}
             </Typography>
             <Box>
-              <Avatar src="" alt="" onClick={handleOpenUserMenu} />
+              <Avatar
+                src={isLoading ? "" : userInfo?.profileImg}
+                alt=""
+                onClick={handleOpenUserMenu}
+              />
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
