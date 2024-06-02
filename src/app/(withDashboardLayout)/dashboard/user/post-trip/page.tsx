@@ -1,6 +1,7 @@
 "use client";
 
 import TBForm from "@/components/Forms/TBForm";
+import { dateFormatter, timeFormatter } from "@/utils/dateAndTimeFormatter";
 import {
   Box,
   Button,
@@ -65,6 +66,32 @@ const PostTripPage = () => {
   const steps = getSteps();
 
   const handleNext = async (values: FieldValues) => {
+    let modifiedActivities = [];
+    if (values?.activities) {
+      modifiedActivities = values?.activities
+        ?.split(",")
+        ?.map((item: string) => item.trim());
+    }
+    const modifiedItinerary = values?.itinerary?.map(
+      (item: {
+        date: Date;
+        startTime: Date;
+        endTime: Date;
+        activity: string;
+      }) => {
+        return {
+          date: dateFormatter(item.date),
+          startTime: timeFormatter(item.startTime),
+          endTime: timeFormatter(item.endTime),
+          activity: item.activity,
+        };
+      }
+    );
+    values.startDate = dateFormatter(values.startDate);
+    values.endDate = dateFormatter(values.endDate);
+    values.itinerary = modifiedItinerary;
+    values.activities = modifiedActivities;
+
     console.log(values);
     if (activeStep === steps.length - 1) {
       console.log("dukece");
