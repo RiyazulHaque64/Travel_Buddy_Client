@@ -2,21 +2,26 @@
 
 import CancelIcon from "@mui/icons-material/Cancel";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import Image from "next/image";
 import { Controller, useFormContext } from "react-hook-form";
 
 type TBMultipleFileUploaderProps = {
   name: string;
+  label?: string;
   fullWidth?: boolean;
 };
 
 const TBMultipleFileUploader = ({
   name,
+  label = "Upload Images",
   fullWidth = true,
 }: TBMultipleFileUploaderProps) => {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, formState } = useFormContext();
+  const isError = formState.errors[name] !== undefined;
+  const errorMessage: string = (formState.errors[name]?.message ||
+    "This field is required") as string;
 
   const handleRemoveImage = (index: number, value: any) => {
     const newImages = value.filter((_: any, i: number) => i !== index);
@@ -36,8 +41,9 @@ const TBMultipleFileUploader = ({
             variant="outlined"
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
+            color={isError ? "error" : "primary"}
           >
-            Upload Images
+            {label}
             <input
               {...field}
               accept="image/*"
@@ -52,6 +58,14 @@ const TBMultipleFileUploader = ({
               }}
             />
           </Button>
+          {isError && (
+            <Typography
+              sx={{ ml: "14px", mt: "4px", fontSize: "14px" }}
+              color="error"
+            >
+              {errorMessage}
+            </Typography>
+          )}
 
           {/* Show in UI */}
           <Box sx={{ display: "flex", flexWrap: "wrap", marginTop: "20px" }}>

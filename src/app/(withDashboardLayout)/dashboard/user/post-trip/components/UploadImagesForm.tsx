@@ -13,7 +13,10 @@ const UploadImagesForm = () => {
         />
       </Grid>
       <Grid item md={6}>
-        <TBMultipleFileUploader name="touristPlaceImage" />
+        <TBMultipleFileUploader
+          name="touristPlaceImage"
+          label="Tourist Place Images"
+        />
       </Grid>
     </>
   );

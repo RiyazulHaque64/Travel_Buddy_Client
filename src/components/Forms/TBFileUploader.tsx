@@ -1,7 +1,7 @@
 "use client";
 
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { Box, Button, SxProps } from "@mui/material";
+import { Box, Button, SxProps, Typography } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -20,7 +20,11 @@ const TBFileUploader = ({
   showInUI = false,
 }: TBFileUploaderProps) => {
   const [fileName, setFileName] = useState<string | undefined>("");
-  const { control } = useFormContext();
+  const { control, formState } = useFormContext();
+  const isError = formState.errors[name] !== undefined;
+  const errorMessage: string = (formState.errors[name]?.message ||
+    "This field is required") as string;
+
   return (
     <Controller
       control={control}
@@ -35,6 +39,7 @@ const TBFileUploader = ({
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
             sx={{ ...sx }}
+            color={isError ? "error" : "primary"}
           >
             {fileName?.length ? fileName : label}
             <input
@@ -48,6 +53,14 @@ const TBFileUploader = ({
               style={{ display: "none" }}
             />
           </Button>
+          {isError && (
+            <Typography
+              sx={{ ml: "14px", mt: "4px", fontSize: "14px" }}
+              color="error"
+            >
+              {errorMessage}
+            </Typography>
+          )}
           {showInUI && value && (
             <Box sx={{ marginTop: "20px" }}>
               <Image

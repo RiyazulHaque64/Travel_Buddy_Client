@@ -2,6 +2,7 @@
 
 import TBForm from "@/components/Forms/TBForm";
 import { usePostTripMutation } from "@/redux/api/tripApi";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -23,10 +24,6 @@ import UploadImagesForm from "./components/UploadImagesForm";
 import { prepareFormData } from "./helpers/prepareFormData";
 
 const TripPostValidationSchema = z.object({
-  destination: z.string().min(1, { message: "Destination name is required" }),
-  type: z.string().min(1, { message: "Trip type is required" }),
-  budget: z.string().min(1, { message: "Budget is required" }),
-  activities: z.string().min(1, { message: "Activities is required" }),
   description: z.string().min(1, { message: "Description is required" }),
   itinerary: z.array(
     z.object({
@@ -37,6 +34,27 @@ const TripPostValidationSchema = z.object({
     })
   ),
   touristPlaceImage: z.array(z.string()),
+});
+
+const step1ValidationSchema = z.object({
+  destination: z.string().min(1, { message: "Destination name is required" }),
+  type: z.string().min(1, { message: "Trip type is required" }),
+  budget: z.string().min(1, { message: "Budget is required" }),
+  activities: z.string().min(1, { message: "Activities is required" }),
+  startDate: z.any(),
+  endDate: z.any(),
+});
+
+const step2ValidationSchema = z.object({
+  thumbnail: z
+    .instanceof(File, { message: "Thumbnail image is required" })
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
+      {
+        message: "Only .jpg, .png, and .gif formats are allowed",
+      }
+    )
+    .nullable(),
 });
 
 function getSteps() {
@@ -119,16 +137,19 @@ const PostTripPage = () => {
           <TBForm
             onSubmit={handleNext}
             defaultValues={{
-              destination: "Paris, France",
-              type: "STUDY",
-              budget: 3000,
-              activities: "Sightseeing, Museums",
+              destination: "",
+              type: "",
+              budget: "",
+              activities: "",
               description:
                 "A summer vacation to explore the historical and cultural sites of Paris.",
               itinerary: [{ activity: "Boat tour on the Seine River" }],
               touristPlaceImage: [],
             }}
             formReset={false}
+            resolver={zodResolver(
+              activeStep === 0 ? step1ValidationSchema : step2ValidationSchema
+            )}
           >
             <Box mb={4}>
               <Grid container spacing={2}>

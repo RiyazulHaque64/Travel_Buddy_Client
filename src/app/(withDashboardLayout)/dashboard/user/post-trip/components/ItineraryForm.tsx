@@ -62,7 +62,7 @@ const ItineraryForm = () => {
       ))}
 
       <Grid item md={12}>
-        <Stack>
+        <Stack sx={{ marginBottom: "20px" }}>
           <Button variant="outlined" onClick={() => append({ activity: "" })}>
             Add Field
           </Button>

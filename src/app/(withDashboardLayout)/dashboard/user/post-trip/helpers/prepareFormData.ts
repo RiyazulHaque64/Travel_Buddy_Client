@@ -2,6 +2,7 @@ import { dateFormatter, timeFormatter } from "@/utils/dateAndTimeFormatter";
 import { FieldValues } from "react-hook-form";
 
 export const prepareFormData = (values: FieldValues) => {
+  console.log(values);
   let modifiedActivities = [];
   if (values?.activities) {
     modifiedActivities = values?.activities
@@ -30,7 +31,6 @@ export const prepareFormData = (values: FieldValues) => {
   values.activities = modifiedActivities;
 
   const { thumbnail, touristPlaceImage, ...remainingData } = values;
-  console.log(touristPlaceImage);
 
   const stringifiedData = JSON.stringify(remainingData);
   const formData = new FormData();
