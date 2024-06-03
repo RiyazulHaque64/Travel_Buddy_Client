@@ -12,6 +12,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -38,7 +39,14 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#fff", boxShadow: 0 }}>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: `rgba(92, 85, 225, 0.09)`,
+        boxShadow: 0,
+        borderBottom: `1px solid ${grey[200]}`,
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <ConnectingAirportsIcon

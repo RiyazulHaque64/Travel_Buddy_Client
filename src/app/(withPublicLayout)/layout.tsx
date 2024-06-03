@@ -7,7 +7,14 @@ const PublicLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Box>
       <Navbar />
-      <Box sx={{ minHeight: "calc(100vh - 144px)" }}>{children}</Box>
+      <Box
+        sx={{
+          minHeight: "calc(100vh - 146px)",
+          backgroundColor: `rgba(92, 85, 225, 0.06)`,
+        }}
+      >
+        {children}
+      </Box>
       <Footer />
     </Box>
   );

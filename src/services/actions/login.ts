@@ -11,6 +11,7 @@ const login = async (credential: FieldValues) => {
     body: JSON.stringify(credential),
   });
   const data = res.json();
+  console.log(data);
   return data;
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import TBForm from "@/components/Forms/TBForm";
+import TBTextEditor from "@/components/Forms/TBTextEditor";
 import { usePostTripMutation } from "@/redux/api/tripApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingButton } from "@mui/lab";
@@ -16,95 +17,57 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
-import { z } from "zod";
-import BasicInformationForm from "./components/BasicInformationForm";
-import BriefDescriptionForm from "./components/BriefDescriptionForm";
-import ItineraryForm from "./components/ItineraryForm";
-import UploadImagesForm from "./components/UploadImagesForm";
-import { prepareFormData } from "./helpers/prepareFormData";
-
-const TripPostValidationSchema = z.object({
-  description: z.string().min(1, { message: "Description is required" }),
-  itinerary: z.array(
-    z.object({
-      activity: z.string(),
-      date: z.string(),
-      startTime: z.string(),
-      endTime: z.string(),
-    })
-  ),
-  touristPlaceImage: z.array(z.string()),
-});
-
-const step1ValidationSchema = z.object({
-  destination: z.string().min(1, { message: "Destination name is required" }),
-  type: z.string().min(1, { message: "Trip type is required" }),
-  budget: z.string().min(1, { message: "Budget is required" }),
-  activities: z.string().min(1, { message: "Activities is required" }),
-  startDate: z.any(),
-  endDate: z.any(),
-});
-
-const step2ValidationSchema = z.object({
-  thumbnail: z
-    .instanceof(File, { message: "Thumbnail image is required" })
-    .refine(
-      (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
-      {
-        message: "Only .jpg, .png, and .gif formats are allowed",
-      }
-    )
-    .nullable(),
-});
+import { toast } from "sonner";
+import BasicInformationForm from "../post-trip/components/BasicInformationForm";
+import ItineraryForm from "../post-trip/components/ItineraryForm";
+import UploadImagesForm from "../post-trip/components/UploadImagesForm";
+import { prepareFormData } from "../post-trip/helpers/prepareFormData";
+import {
+  step1ValidationSchema,
+  step2ValidationSchema,
+  step3ValidationSchema,
+  step4ValidationSchema,
+} from "./helpers/postTripFormStepValidation";
 
 function getSteps() {
   return [
     "Basic information",
-    "Upload Images",
     "Brief Description",
     "Itinerary",
+    "Upload Images",
   ];
-}
-
-function getStepContent(step: number) {
-  switch (step) {
-    case 0:
-      return <BasicInformationForm />;
-    case 1:
-      return <UploadImagesForm />;
-    case 2:
-      return <BriefDescriptionForm />;
-    case 3:
-      return <ItineraryForm />;
-    default:
-      return "unknown step";
-  }
 }
 
 const PostTripPage = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [formValues, setFormValues] = useState({});
   const steps = getSteps();
-  const [postTrip, { isLoading }] = usePostTripMutation();
+  const [postTrip, { isLoading, isError, error }] = usePostTripMutation();
+
+  const handleBack = () => {
+    setActiveStep(activeStep - 1);
+  };
 
   const handleNext = async (values: FieldValues) => {
-    const formData = prepareFormData(values);
+    setFormValues((prevValues) => ({ ...prevValues, ...values }));
+    setActiveStep(activeStep + 1);
+  };
+
+  const handleSubmit = async (values: FieldValues) => {
+    const formData = prepareFormData({ ...formValues, ...values });
     if (activeStep === steps.length - 1) {
-      console.log("dukece");
       try {
         const res = await postTrip(formData).unwrap();
-        console.log("Redux Response:", res);
+        if (res?.id) {
+          toast.success("Trip creation successfull");
+        }
       } catch (error: any) {
-        console.log("Try Catch Response: ", error);
         console.log(error?.message);
       }
       setActiveStep(activeStep + 1);
     } else {
       setActiveStep(activeStep + 1);
     }
-  };
-
-  const handleBack = () => {
-    setActiveStep(activeStep - 1);
   };
 
   const handleAddAnother = () => {
@@ -127,52 +90,127 @@ const PostTripPage = () => {
 
       {activeStep === steps.length ? (
         <Stack direction="column" alignItems="center" mt={8}>
-          <Typography variant="h4" align="center" mb={5} color="primary.main">
-            Your trip creation was successful!
-          </Typography>
-          <Button onClick={handleAddAnother}>Add Another</Button>
+          {isError ? (
+            <>
+              <Typography variant="h4" align="center" mb={2} color="error">
+                Something went wrong!
+              </Typography>
+              <Typography variant="h6" align="center" mb={5}>
+                Every fields are required, so fillup the all fields
+              </Typography>
+              <Button onClick={handleAddAnother}>Add Again</Button>
+            </>
+          ) : (
+            <>
+              <Typography
+                variant="h4"
+                align="center"
+                mb={5}
+                color="primary.main"
+              >
+                Your trip creation was successful!
+              </Typography>
+              <Button onClick={handleAddAnother}>Add Another</Button>
+            </>
+          )}
         </Stack>
       ) : (
         <Box mt={5}>
-          <TBForm
-            onSubmit={handleNext}
-            defaultValues={{
-              destination: "",
-              type: "",
-              budget: "",
-              activities: "",
-              description:
-                "A summer vacation to explore the historical and cultural sites of Paris.",
-              itinerary: [{ activity: "Boat tour on the Seine River" }],
-              touristPlaceImage: [],
-            }}
-            formReset={false}
-            resolver={zodResolver(
-              activeStep === 0 ? step1ValidationSchema : step2ValidationSchema
-            )}
-          >
-            <Box mb={4}>
+          {activeStep === 0 ? (
+            <TBForm
+              onSubmit={handleNext}
+              defaultValues={{
+                destination: "",
+                type: "",
+                budget: "",
+                activities: "",
+              }}
+              formReset={false}
+              resolver={zodResolver(step1ValidationSchema)}
+            >
+              <Box mb={4}>
+                <Grid container spacing={2}>
+                  <BasicInformationForm />
+                </Grid>
+              </Box>
+              <Stack direction="row" justifyContent="space-between">
+                <Button disabled={activeStep === 0} onClick={handleBack}>
+                  back
+                </Button>
+                <Button variant="contained" color="primary" type="submit">
+                  Next
+                </Button>
+              </Stack>
+            </TBForm>
+          ) : activeStep === 1 ? (
+            <TBForm
+              onSubmit={handleNext}
+              defaultValues={{
+                description: "",
+              }}
+              formReset={false}
+              resolver={zodResolver(step2ValidationSchema)}
+            >
+              <Box mb={4}>
+                <Grid container spacing={2}>
+                  <Grid item md={12}>
+                    <TBTextEditor
+                      name="description"
+                      placeholder="Breif Description"
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+              <Stack direction="row" justifyContent="space-between">
+                <Button onClick={handleBack}>back</Button>
+                <Button variant="contained" color="primary" type="submit">
+                  Next
+                </Button>
+              </Stack>
+            </TBForm>
+          ) : activeStep === 2 ? (
+            <TBForm
+              onSubmit={handleNext}
+              defaultValues={{ itinerary: [{ activity: "" }] }}
+              formReset={false}
+              resolver={zodResolver(step3ValidationSchema)}
+            >
               <Grid container spacing={2}>
-                {getStepContent(activeStep)}
+                <ItineraryForm />
               </Grid>
-            </Box>
-
-            <Stack direction="row" justifyContent="space-between">
-              <Button disabled={activeStep === 0} onClick={handleBack}>
-                back
-              </Button>
-              <LoadingButton
-                variant="contained"
-                color="primary"
-                type="submit"
-                loading={isLoading}
-                disabled={isLoading}
-                loadingIndicator="Submitting..."
-              >
-                {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </LoadingButton>
-            </Stack>
-          </TBForm>
+              <Stack direction="row" justifyContent="space-between">
+                <Button onClick={handleBack}>back</Button>
+                <Button variant="contained" color="primary" type="submit">
+                  Next
+                </Button>
+              </Stack>
+            </TBForm>
+          ) : (
+            <TBForm
+              onSubmit={handleSubmit}
+              formReset={false}
+              resolver={zodResolver(step4ValidationSchema)}
+            >
+              <Box mb={4}>
+                <Grid container spacing={2}>
+                  <UploadImagesForm />
+                </Grid>
+              </Box>
+              <Stack direction="row" justifyContent="space-between">
+                <Button onClick={handleBack}>back</Button>
+                <LoadingButton
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  loading={isLoading}
+                  disabled={isLoading}
+                  loadingIndicator="Submitting..."
+                >
+                  Submit
+                </LoadingButton>
+              </Stack>
+            </TBForm>
+          )}
         </Box>
       )}
     </Box>

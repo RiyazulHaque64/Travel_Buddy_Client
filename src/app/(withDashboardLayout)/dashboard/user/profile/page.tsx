@@ -2,12 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import {
-  FormProvider,
-  SubmitHandler,
-  UseFormReturn,
-  useForm,
-} from "react-hook-form";
+import { FormProvider, UseFormReturn, useForm } from "react-hook-form";
 import { z } from "zod";
 import { step1Schema, step2Schema, step3Schema } from "./validationSchema";
 
@@ -49,7 +44,7 @@ const MultiStepForm: React.FC = () => {
     setStep(prevStep);
   };
 
-  const handleSubmit: SubmitHandler<FormData> = (data) => {
+  const handleSubmit = (data: any) => {
     console.log("Form Data:", { ...formData, ...data });
   };
 

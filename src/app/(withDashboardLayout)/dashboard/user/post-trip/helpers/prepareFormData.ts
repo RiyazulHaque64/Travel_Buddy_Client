@@ -2,8 +2,7 @@ import { dateFormatter, timeFormatter } from "@/utils/dateAndTimeFormatter";
 import { FieldValues } from "react-hook-form";
 
 export const prepareFormData = (values: FieldValues) => {
-  console.log(values);
-  let modifiedActivities = [];
+  let modifiedActivities: string[] = [];
   if (values?.activities) {
     modifiedActivities = values?.activities
       ?.split(",")
@@ -24,13 +23,14 @@ export const prepareFormData = (values: FieldValues) => {
       };
     }
   );
+  console.log(modifiedItinerary);
   values.budget = Number(values.budget);
+  values.activities = modifiedActivities;
   values.startDate = dateFormatter(values.startDate);
   values.endDate = dateFormatter(values.endDate);
   values.itinerary = modifiedItinerary;
-  values.activities = modifiedActivities;
-
   const { thumbnail, touristPlaceImage, ...remainingData } = values;
+  console.log(values);
 
   const stringifiedData = JSON.stringify(remainingData);
   const formData = new FormData();

@@ -7,7 +7,11 @@ const Footer = () => {
       direction="row"
       alignItems="center"
       justifyContent="center"
-      sx={{ p: "20px", borderTop: "1px solid #e0e0e0" }}
+      sx={{
+        p: "20px",
+        borderTop: "1px solid #e0e0e0",
+        backgroundColor: `rgba(92, 85, 225, 0.09)`,
+      }}
     >
       <Logo />
       <Divider
