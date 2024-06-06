@@ -1,23 +1,25 @@
 "use client";
-import {
-  Box,
-  Checkbox,
-  Container,
-  Divider,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import TripCard from "@/components/UI/AuthButton/TripCard";
+import { useGetTripsQuery } from "@/redux/api/tripApi";
+import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
+import BudgetRange from "./components/BudgetRange";
+import FilterByType from "./components/FilterByType";
 import SearchField from "./components/SearchField";
+import ShowTrip from "./components/ShowTrip";
+import SortBy from "./components/SortBy";
 
 const TripsPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filter, setFilter] = useState<string>("");
-  console.log(searchTerm);
+  const [filterByType, setFilterByType] = useState<string[]>([]);
+  const [budgetRange, setBudgetRange] = useState<number[]>([20, 5000]);
+  const [showTrip, setShowTrip] = useState("");
+  const [sortBy, setSortBy] = useState("");
+
+  const { data: trips, isLoading } = useGetTripsQuery({});
+  console.log(trips);
+
   return (
     <Box
       sx={{
@@ -25,37 +27,47 @@ const TripsPage = () => {
       }}
     >
       <Container>
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          sx={{ border: "1px solid red", p: "50px" }}
-        >
+        <Stack justifyContent="center" alignItems="center" sx={{ p: "50px" }}>
           <SearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </Stack>
-        <Stack direction="row" gap={2}>
-          <Stack>
-            <Box
-              sx={{
-                border: `1px solid ${grey[200]}`,
-                borderRadius: "4px",
-                p: "20px",
-                backgroundColor: "white",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontSize: "16px" }}>
-                Filter by Type
-              </Typography>
-              <Divider />
-              <FormGroup>
-                <FormControlLabel control={<Checkbox />} label="Label" />
-                <FormControlLabel control={<Checkbox />} label="Required" />
-                <FormControlLabel control={<Checkbox />} label="Disabled" />
-              </FormGroup>
-            </Box>
+        <Stack direction="row" gap={1}>
+          <Stack spacing={1} width="20%">
+            <FilterByType
+              filterByType={filterByType}
+              setFilterByType={setFilterByType}
+            />
+            <BudgetRange
+              budgetRange={budgetRange}
+              setBudgetRange={setBudgetRange}
+            />
           </Stack>
-          <Stack>
-            <Stack>Header</Stack>
-            <Grid container></Grid>
+          <Stack flex={1} spacing={1}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              p={2}
+              sx={{ backgroundColor: "white", borderRadius: "4px" }}
+            >
+              <Box>
+                <Typography
+                  variant="h6"
+                  component="h6"
+                  sx={{ fontWeight: 600, color: grey[800] }}
+                >
+                  All Trips
+                </Typography>
+              </Box>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <ShowTrip showTrip={showTrip} setShowTrip={setShowTrip} />
+                <SortBy sortBy={sortBy} setSortBy={setSortBy} />
+              </Stack>
+            </Stack>
+            <Grid container>
+              <Grid item md={3}>
+                <TripCard />
+              </Grid>
+            </Grid>
           </Stack>
         </Stack>
       </Container>

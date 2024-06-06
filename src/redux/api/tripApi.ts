@@ -12,7 +12,14 @@ const tripApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.trip],
     }),
+    getTrips: build.query({
+      query: () => ({
+        url: "/trips",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.trip],
+    }),
   }),
 });
 
-export const { usePostTripMutation } = tripApi;
+export const { usePostTripMutation, useGetTripsQuery } = tripApi;
