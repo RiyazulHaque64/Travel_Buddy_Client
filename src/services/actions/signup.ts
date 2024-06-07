@@ -7,8 +7,6 @@ const signup = async (formData: FormData) => {
     cache: "no-store",
   });
   const newUser = await res.json();
-  console.log(newUser);
-
   return newUser;
 };
 

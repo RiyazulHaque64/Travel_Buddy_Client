@@ -1,6 +1,8 @@
 "use client";
-import TripCard from "@/components/UI/AuthButton/TripCard";
+import TripCard from "@/components/UI/TripCard/TripCard";
+import TripCardSkeleton from "@/components/UI/TripCard/TripCardSkeleton";
 import { useGetTripsQuery } from "@/redux/api/tripApi";
+import { ITrip } from "@/types/trip";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
@@ -10,6 +12,8 @@ import SearchField from "./components/SearchField";
 import ShowTrip from "./components/ShowTrip";
 import SortBy from "./components/SortBy";
 
+const items = [1, 2, 3, 4, 5, 6];
+
 const TripsPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterByType, setFilterByType] = useState<string[]>([]);
@@ -17,8 +21,7 @@ const TripsPage = () => {
   const [showTrip, setShowTrip] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  const { data: trips, isLoading } = useGetTripsQuery({});
-  console.log(trips);
+  const { data: tripsResponse, isLoading } = useGetTripsQuery({});
 
   return (
     <Box
@@ -63,11 +66,38 @@ const TripsPage = () => {
                 <SortBy sortBy={sortBy} setSortBy={setSortBy} />
               </Stack>
             </Stack>
-            <Grid container>
-              <Grid item md={3}>
-                <TripCard />
+            <Box>
+              <Grid container spacing={2}>
+                {isLoading ? (
+                  items.map((item) => (
+                    <Grid key={item} item md={4}>
+                      <TripCardSkeleton />
+                    </Grid>
+                  ))
+                ) : tripsResponse ? (
+                  tripsResponse?.data?.length > 0 ? (
+                    tripsResponse?.data?.map((trip: ITrip) => (
+                      <Grid key={trip.id} item md={4}>
+                        <TripCard trip={trip} />
+                      </Grid>
+                    ))
+                  ) : (
+                    <Typography
+                      sx={{ ml: "30px", mt: "20px", fontWeight: 600 }}
+                    >
+                      No trip found!
+                    </Typography>
+                  )
+                ) : (
+                  <Typography
+                    color="error"
+                    sx={{ ml: "30px", mt: "20px", fontWeight: 600 }}
+                  >
+                    Something went wrong
+                  </Typography>
+                )}
               </Grid>
-            </Grid>
+            </Box>
           </Stack>
         </Stack>
       </Container>

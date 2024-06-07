@@ -1,5 +1,3 @@
-"use server";
-
 import { FieldValues } from "react-hook-form";
 
 const login = async (credential: FieldValues) => {
@@ -9,9 +7,9 @@ const login = async (credential: FieldValues) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(credential),
+    credentials: "include",
   });
-  const data = res.json();
-  console.log(data);
+  const data = await res.json();
   return data;
 };
 

@@ -96,12 +96,12 @@ export default function DashboardDrawer({
               sx={{ fontSize: "16px", fontWeight: 600 }}
             >
               {`${detectGrettings()}, ${
-                isLoading ? "Loading..." : userInfo?.user?.name
+                isLoading ? "Loading..." : userInfo?.data?.user?.name
               }`}
             </Typography>
             <Box>
               <Avatar
-                src={isLoading ? "" : userInfo?.profileImg}
+                src={isLoading ? "" : userInfo?.data?.profileImg}
                 alt=""
                 onClick={handleOpenUserMenu}
               />
