@@ -13,9 +13,10 @@ const tripApi = baseApi.injectEndpoints({
       invalidatesTags: [tagTypes.trip],
     }),
     getTrips: build.query({
-      query: () => ({
+      query: (args) => ({
         url: "/trips",
         method: "GET",
+        params: args,
       }),
       providesTags: [tagTypes.trip],
     }),

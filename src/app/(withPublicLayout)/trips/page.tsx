@@ -2,6 +2,7 @@
 import TripCard from "@/components/UI/TripCard/TripCard";
 import TripCardSkeleton from "@/components/UI/TripCard/TripCardSkeleton";
 import { useGetTripsQuery } from "@/redux/api/tripApi";
+import { useDebounced } from "@/redux/hooks";
 import { ITrip } from "@/types/trip";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
@@ -21,7 +22,19 @@ const TripsPage = () => {
   const [showTrip, setShowTrip] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  const { data: tripsResponse, isLoading } = useGetTripsQuery({});
+  const query: Record<string, any> = { limit: 6 };
+  const debouncedValue = useDebounced({
+    searchTerm,
+    delay: 600,
+  });
+  if (debouncedValue) {
+    query["searchTerm"] = debouncedValue;
+  }
+  if (showTrip) {
+    query["limit"] = Number(showTrip);
+  }
+
+  const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
 
   return (
     <Box
