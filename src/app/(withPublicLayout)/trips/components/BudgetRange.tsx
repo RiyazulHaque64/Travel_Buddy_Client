@@ -5,10 +5,15 @@ import { Dispatch, SetStateAction } from "react";
 const BudgetRange = ({
   budgetRange,
   setBudgetRange,
+  min,
+  max,
 }: {
   budgetRange: number[];
   setBudgetRange: Dispatch<SetStateAction<number[]>>;
+  min: number;
+  max: number;
 }) => {
+  console.log(min, max);
   const handleBudgetRange = (
     event: Event,
     newValue: number | number[],
@@ -49,8 +54,8 @@ const BudgetRange = ({
         value={budgetRange}
         onChange={handleBudgetRange}
         valueLabelDisplay="auto"
-        min={0}
-        max={5000}
+        min={18000}
+        max={60000}
         disableSwap
       />
     </Box>

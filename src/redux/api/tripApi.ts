@@ -20,7 +20,18 @@ const tripApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.trip],
     }),
+    getLowestAndHighestBudget: build.query({
+      query: () => ({
+        url: "/trips/lowest-and-highest-budget",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.trip],
+    }),
   }),
 });
 
-export const { usePostTripMutation, useGetTripsQuery } = tripApi;
+export const {
+  usePostTripMutation,
+  useGetTripsQuery,
+  useGetLowestAndHighestBudgetQuery,
+} = tripApi;

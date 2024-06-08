@@ -20,8 +20,8 @@ const SortBy = ({ sortBy, setSortBy }: TSortByProps) => {
         onChange={handleShortBy}
         fullWidth
       >
-        <MenuItem value={"Budget (Low to High)"}>Budget (Low to High)</MenuItem>
-        <MenuItem value={"Budget (High to Low)"}>Budget (High to Low)</MenuItem>
+        <MenuItem value={"budget-asc"}>Budget (Low to High)</MenuItem>
+        <MenuItem value={"budget-desc"}>Budget (High to Low)</MenuItem>
       </TextField>
     </Box>
   );

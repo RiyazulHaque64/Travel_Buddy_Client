@@ -1,7 +1,10 @@
 "use client";
 import TripCard from "@/components/UI/TripCard/TripCard";
 import TripCardSkeleton from "@/components/UI/TripCard/TripCardSkeleton";
-import { useGetTripsQuery } from "@/redux/api/tripApi";
+import {
+  useGetLowestAndHighestBudgetQuery,
+  useGetTripsQuery,
+} from "@/redux/api/tripApi";
 import { useDebounced } from "@/redux/hooks";
 import { ITrip } from "@/types/trip";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
@@ -16,13 +19,20 @@ import SortBy from "./components/SortBy";
 const items = [1, 2, 3, 4, 5, 6];
 
 const TripsPage = () => {
+  const query: Record<string, any> = { limit: 6 };
+  const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
+  const { data: lowestAndHighestBudget } = useGetLowestAndHighestBudgetQuery(
+    {}
+  );
+  const lowestBudget = lowestAndHighestBudget?.data?.lowestBudget || 0;
+  const highestBudget = lowestAndHighestBudget?.data?.highestBudget || 0;
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterByType, setFilterByType] = useState<string[]>([]);
-  const [budgetRange, setBudgetRange] = useState<number[]>([20, 5000]);
+  const [budgetRange, setBudgetRange] = useState<number[]>([18000, 60000]);
   const [showTrip, setShowTrip] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  const query: Record<string, any> = { limit: 6 };
   const debouncedValue = useDebounced({
     searchTerm,
     delay: 600,
@@ -33,8 +43,17 @@ const TripsPage = () => {
   if (showTrip) {
     query["limit"] = Number(showTrip);
   }
-
-  const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
+  if (sortBy === "budget-asc") {
+    query["sortBy"] = "budget";
+    query["sortOrder"] = "asc";
+  }
+  if (sortBy === "budget-desc") {
+    query["sortBy"] = "budget";
+    query["sortOrder"] = "desc";
+  }
+  if (filterByType.length > 0) {
+    query["type"] = filterByType.join(",");
+  }
 
   return (
     <Box
@@ -55,6 +74,8 @@ const TripsPage = () => {
             <BudgetRange
               budgetRange={budgetRange}
               setBudgetRange={setBudgetRange}
+              min={lowestBudget}
+              max={highestBudget}
             />
           </Stack>
           <Stack flex={1} spacing={1}>
