@@ -13,11 +13,14 @@ const tripApi = baseApi.injectEndpoints({
       invalidatesTags: [tagTypes.trip],
     }),
     getTrips: build.query({
-      query: (args) => ({
-        url: "/trips",
-        method: "GET",
-        params: args,
-      }),
+      query: (args) => {
+        console.log(args);
+        return {
+          url: "/trips",
+          method: "GET",
+          params: args,
+        };
+      },
       providesTags: [tagTypes.trip],
     }),
     getLowestAndHighestBudget: build.query({

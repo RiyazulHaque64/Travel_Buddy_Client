@@ -5,7 +5,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
+  Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
@@ -39,11 +39,11 @@ const FilterByType = ({
         backgroundColor: "white",
       }}
     >
+      <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>
+        Filter by Type
+      </Typography>
+      <Divider sx={{ mt: "6px", mb: "8px" }} />
       <FormControl>
-        <FormLabel sx={{ fontSize: "16px", fontWeight: 600 }}>
-          Filter by Type
-        </FormLabel>
-        <Divider sx={{ mt: "6px", mb: "8px" }} />
         <FormGroup>
           <FormControlLabel
             control={

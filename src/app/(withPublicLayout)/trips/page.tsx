@@ -11,6 +11,7 @@ import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
 import BudgetRange from "./components/BudgetRange";
+import DateRange from "./components/DateRange";
 import FilterByType from "./components/FilterByType";
 import SearchField from "./components/SearchField";
 import ShowTrip from "./components/ShowTrip";
@@ -19,26 +20,31 @@ import SortBy from "./components/SortBy";
 const items = [1, 2, 3, 4, 5, 6];
 
 const TripsPage = () => {
-  const query: Record<string, any> = { limit: 6 };
-  const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
   const { data: lowestAndHighestBudget } = useGetLowestAndHighestBudgetQuery(
     {}
   );
   const lowestBudget = lowestAndHighestBudget?.data?.lowestBudget || 0;
-  const highestBudget = lowestAndHighestBudget?.data?.highestBudget || 0;
+  const highestBudget =
+    lowestAndHighestBudget?.data?.highestBudget || Number.MAX_VALUE;
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterByType, setFilterByType] = useState<string[]>([]);
-  const [budgetRange, setBudgetRange] = useState<number[]>([18000, 60000]);
+  const [budgetRange, setBudgetRange] = useState<number[]>([
+    lowestBudget,
+    highestBudget,
+  ]);
   const [showTrip, setShowTrip] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  const debouncedValue = useDebounced({
-    searchTerm,
+  const query: Record<string, any> = { limit: 6 };
+
+  const debouncedSearchValue = useDebounced({
+    value: searchTerm,
     delay: 600,
   });
-  if (debouncedValue) {
-    query["searchTerm"] = debouncedValue;
+
+  if (debouncedSearchValue) {
+    query["searchTerm"] = debouncedSearchValue;
   }
   if (showTrip) {
     query["limit"] = Number(showTrip);
@@ -54,6 +60,21 @@ const TripsPage = () => {
   if (filterByType.length > 0) {
     query["type"] = filterByType.join(",");
   }
+  const debouncedBudgetRange = useDebounced({
+    value: budgetRange,
+    delay: 1000,
+  });
+  if (
+    (debouncedBudgetRange[0] !== 0 &&
+      debouncedBudgetRange[0] !== lowestBudget) ||
+    (debouncedBudgetRange[1] !== Number.MAX_VALUE &&
+      debouncedBudgetRange[1] !== highestBudget)
+  ) {
+    query["minBudget"] = debouncedBudgetRange[0];
+    query["maxBudget"] = debouncedBudgetRange[1];
+  }
+
+  const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
 
   return (
     <Box
@@ -77,6 +98,7 @@ const TripsPage = () => {
               min={lowestBudget}
               max={highestBudget}
             />
+            <DateRange />
           </Stack>
           <Stack flex={1} spacing={1}>
             <Stack

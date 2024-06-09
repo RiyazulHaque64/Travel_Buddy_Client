@@ -13,7 +13,6 @@ const BudgetRange = ({
   min: number;
   max: number;
 }) => {
-  console.log(min, max);
   const handleBudgetRange = (
     event: Event,
     newValue: number | number[],
@@ -54,8 +53,8 @@ const BudgetRange = ({
         value={budgetRange}
         onChange={handleBudgetRange}
         valueLabelDisplay="auto"
-        min={18000}
-        max={60000}
+        min={min}
+        max={max}
         disableSwap
       />
     </Box>
