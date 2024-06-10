@@ -1,9 +1,24 @@
 "use client";
 
+import SimpleDatePicker from "@/components/UI/DatePicker/SimpleDatePicker";
 import { Box, Divider, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { Dayjs } from "dayjs";
+import { Dispatch, SetStateAction } from "react";
 
-const DateRange = () => {
+type TDateRange = {
+  startDate: Dayjs | null;
+  setStartDate: Dispatch<SetStateAction<Dayjs | null>>;
+  endDate: Dayjs | null;
+  setEndDate: Dispatch<SetStateAction<Dayjs | null>>;
+};
+
+const DateRange = ({
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+}: TDateRange) => {
   return (
     <Box
       sx={{
@@ -16,8 +31,10 @@ const DateRange = () => {
       <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>
         Date Range
       </Typography>
-      <Box></Box>
       <Divider sx={{ mt: "6px", mb: "8px" }} />
+      <Box>
+        <SimpleDatePicker value={startDate} setValue={setStartDate} />
+      </Box>
     </Box>
   );
 };

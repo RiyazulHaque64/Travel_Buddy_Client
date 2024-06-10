@@ -9,6 +9,7 @@ import { useDebounced } from "@/redux/hooks";
 import { ITrip } from "@/types/trip";
 import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { Dayjs } from "dayjs";
 import { useState } from "react";
 import BudgetRange from "./components/BudgetRange";
 import DateRange from "./components/DateRange";
@@ -35,6 +36,8 @@ const TripsPage = () => {
   ]);
   const [showTrip, setShowTrip] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
 
   const query: Record<string, any> = { limit: 6 };
 
@@ -98,7 +101,12 @@ const TripsPage = () => {
               min={lowestBudget}
               max={highestBudget}
             />
-            <DateRange />
+            <DateRange
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+            />
           </Stack>
           <Stack flex={1} spacing={1}>
             <Stack
