@@ -1,7 +1,6 @@
 import { ITrip } from "@/types/trip";
 import { capitalizeFirstLetter } from "@/utils/CapitalizeFirstLetter";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import SendIcon from "@mui/icons-material/Send";
 import {
   Button,
   Card,
@@ -13,9 +12,10 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import RequestButton from "./RequestButton";
 
 const TripCard = ({ trip }: { trip: ITrip }) => {
-  const { destination, thumbnail, type, budget, startDate, endDate } = trip;
+  const { id, destination, thumbnail, type, budget, startDate, endDate } = trip;
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardActionArea>
@@ -59,9 +59,7 @@ const TripCard = ({ trip }: { trip: ITrip }) => {
           >
             View Details
           </Button>
-          <Button size="small" color="primary" fullWidth endIcon={<SendIcon />}>
-            Request Trip
-          </Button>
+          <RequestButton id={id} />
         </Stack>
       </CardActions>
     </Card>
