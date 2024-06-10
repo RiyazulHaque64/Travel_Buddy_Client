@@ -7,9 +7,16 @@ import {
 } from "@/redux/api/tripApi";
 import { useDebounced } from "@/redux/hooks";
 import { ITrip } from "@/types/trip";
-import { Box, Container, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Grid,
+  Pagination,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import BudgetRange from "./components/BudgetRange";
 import DateRange from "./components/DateRange";
@@ -34,12 +41,13 @@ const TripsPage = () => {
     lowestBudget,
     highestBudget,
   ]);
-  const [showTrip, setShowTrip] = useState("");
+  const [limit, setLimit] = useState(6);
   const [sortBy, setSortBy] = useState("");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [page, setPage] = useState<number>(1);
 
-  const query: Record<string, any> = { limit: 6 };
+  const query: Record<string, any> = { limit, page };
 
   const debouncedSearchValue = useDebounced({
     value: searchTerm,
@@ -48,9 +56,6 @@ const TripsPage = () => {
 
   if (debouncedSearchValue) {
     query["searchTerm"] = debouncedSearchValue;
-  }
-  if (showTrip) {
-    query["limit"] = Number(showTrip);
   }
   if (sortBy === "budget-asc") {
     query["sortBy"] = "budget";
@@ -76,13 +81,25 @@ const TripsPage = () => {
     query["minBudget"] = debouncedBudgetRange[0];
     query["maxBudget"] = debouncedBudgetRange[1];
   }
+  if (startDate) {
+    const convertedDate = dayjs(startDate).format("YYYY-MM-DD");
+    query["startDate"] = convertedDate;
+  }
+  if (endDate) {
+    const convertedDate = dayjs(endDate).format("YYYY-MM-DD");
+    query["endDate"] = convertedDate;
+  }
 
   const { data: tripsResponse, isLoading } = useGetTripsQuery({ ...query });
+
+  const dataCount = tripsResponse?.meta?.total || 12;
+  const paginationCount = Math.ceil(dataCount / limit);
 
   return (
     <Box
       sx={{
         minHeight: "calc(100vh - 146px)",
+        mb: "50px",
       }}
     >
       <Container>
@@ -126,7 +143,7 @@ const TripsPage = () => {
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1} alignItems="center">
-                <ShowTrip showTrip={showTrip} setShowTrip={setShowTrip} />
+                <ShowTrip showTrip={limit} setShowTrip={setLimit} />
                 <SortBy sortBy={sortBy} setSortBy={setSortBy} />
               </Stack>
             </Stack>
@@ -161,6 +178,19 @@ const TripsPage = () => {
                   </Typography>
                 )}
               </Grid>
+              <Stack
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ mt: 4 }}
+              >
+                <Pagination
+                  count={paginationCount}
+                  page={page}
+                  color="primary"
+                  onChange={(event, value) => setPage(value)}
+                />
+              </Stack>
             </Box>
           </Stack>
         </Stack>

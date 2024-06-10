@@ -28,6 +28,14 @@ const SimpleDatePicker = ({
         label={label}
         value={value}
         onChange={(newValue) => setValue(newValue)}
+        slotProps={{
+          textField: {
+            size: size,
+            sx: { ...sx },
+            variant: "outlined",
+            fullWidth,
+          },
+        }}
       />
     </LocalizationProvider>
   );

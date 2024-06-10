@@ -32,8 +32,12 @@ const DateRange = ({
         Date Range
       </Typography>
       <Divider sx={{ mt: "6px", mb: "8px" }} />
-      <Box>
+      <Box textAlign="center">
         <SimpleDatePicker value={startDate} setValue={setStartDate} />
+        <Typography component="p" my={1}>
+          to
+        </Typography>
+        <SimpleDatePicker value={endDate} setValue={setEndDate} />
       </Box>
     </Box>
   );
